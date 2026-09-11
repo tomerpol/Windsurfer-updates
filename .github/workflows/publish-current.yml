@@ -1,0 +1,27 @@
+name: Publish current APK
+
+on:
+  push:
+    paths:
+      - ".github/workflows/publish-current.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Download signed APK
+        run: |
+          curl -L --fail --silent --show-error 'https://sdmntprpolandcentral.oaiusercontent.com/files/00000000-a810-820a-962c-bca534551ee2/raw?se=2026-09-11T04%3A40%3A36Z&sp=r&sv=2026-02-06&sr=b&scid=01a08ebb-8399-7dca-9c29-5867f0a33a2f&skoid=d4d17077-8f33-42a9-bd8b-aa9d5eaf5320&sktid=a48cca56-e6da-484e-a814-9c849652bcb3&skt=2026-09-11T03%3A22%3A03Z&ske=2026-09-12T03%3A22%3A03Z&sks=b&skv=2026-02-06&sig=uK/F9tYceCZCvlBj%2BCe7UcbdKBpwzy80GFTTn5WjIak%3D' -o artifact.zip
+          unzip -p artifact.zip android-app-debug.apk > windsurfer.apk
+          printf '%s\n' '{"versionCode":3,"versionName":"0.3.0","apkUrl":"https://raw.githubusercontent.com/tomerpol/Windsurfer-updates/main/windsurfer.apk"}' > version.json
+      - name: Publish update files
+        run: |
+          git config user.name github-actions
+          git config user.email github-actions@github.com
+          git add windsurfer.apk version.json
+          git commit -m "Publish Windsurfer 0.3.0"
+          git push
