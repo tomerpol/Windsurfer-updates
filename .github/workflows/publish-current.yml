@@ -1,4 +1,4 @@
-name: Publish current APK
+name: Publish Windsurfer 0.4.1 once
 
 on:
   push:
@@ -13,15 +13,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Download signed APK
+      - name: Download and publish signed APK
         run: |
-          curl -L --fail --silent --show-error 'https://sdmntprpolandcentral.oaiusercontent.com/files/00000000-03c0-820a-8e7e-4fc09e75c631/raw?se=2026-09-15T03%3A59%3A51Z&sp=r&sv=2026-02-06&sr=b&scid=01a0a333-5d8f-7202-8c7a-7e697f20a0c1&skoid=d4d17077-8f33-42a9-bd8b-aa9d5eaf5320&sktid=a48cca56-e6da-484e-a814-9c849652bcb3&skt=2026-09-15T02%3A57%3A03Z&ske=2026-09-16T02%3A57%3A03Z&sks=b&skv=2026-02-06&sig=7EiMknm3svJ5DnTYZY%2BvLauxUG2iPnpjNmjdI5SQ5XE%3D' -o artifact.zip
+          curl -L --fail --silent --show-error 'https://sdmntprbrazilsouth.oaiusercontent.com/files/00000000-59dc-820e-9bfb-43851661bc28/raw?se=2026-09-15T15%3A33%3A08Z&sp=r&sv=2026-02-06&sr=b&scid=01a0a5a9-3fca-7e80-b71b-ecef1d62207d&skoid=d4d17077-8f33-42a9-bd8b-aa9d5eaf5320&sktid=a48cca56-e6da-484e-a814-9c849652bcb3&skt=2026-09-15T05%3A18%3A31Z&ske=2026-09-16T05%3A18%3A31Z&sks=b&skv=2026-02-06&sig=VILJ2nuCDq%2BG570kdbcPj6pfEhKD2YaeRK9NXAHjYJo%3D' -o artifact.zip
           unzip -p artifact.zip android-app-debug.apk > windsurfer.apk
-          printf '%s\n' '{"versionCode":7,"versionName":"0.4.0","apkUrl":"https://raw.githubusercontent.com/tomerpol/Windsurfer-updates/main/windsurfer.apk"}' > version.json
-      - name: Publish update files
-        run: |
+          printf '%s\n' '{"versionCode":8,"versionName":"0.4.1","apkUrl":"https://raw.githubusercontent.com/tomerpol/Windsurfer-updates/main/windsurfer.apk"}' > version.json
           git config user.name github-actions
           git config user.email github-actions@github.com
           git add windsurfer.apk version.json
-          git commit -m "Publish Windsurfer 0.4.0"
+          git rm .github/workflows/publish-current.yml
+          git commit -m "Publish Windsurfer 0.4.1 and remove temporary workflow"
           git push
