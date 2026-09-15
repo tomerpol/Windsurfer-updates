@@ -1,0 +1,26 @@
+name: Publish Windsurfer 0.5.0 once
+
+on:
+  push:
+    paths:
+      - ".github/workflows/publish-current.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Download and publish signed APK
+        run: |
+          curl -L --fail --silent --show-error 'https://sdmntprcentralus.oaiusercontent.com/files/00000000-3964-81f5-9133-ab4f9f0b5bf9/raw?se=2026-09-15T16%3A15%3A56Z&sp=r&sv=2026-02-06&sr=b&scid=01a0a5c6-1d21-76ec-9a0f-28e49e916168&skoid=d4d17077-8f33-42a9-bd8b-aa9d5eaf5320&sktid=a48cca56-e6da-484e-a814-9c849652bcb3&skt=2026-09-15T06%3A28%3A20Z&ske=2026-09-16T06%3A28%3A20Z&sks=b&skv=2026-02-06&sig=JgaMKYciTvmcGuSuhMqhiUiSzjdjq/vo9Cz9eSeR1vc%3D' -o artifact.zip
+          unzip -p artifact.zip android-app-debug.apk > windsurfer.apk
+          printf '%s\n' '{"versionCode":9,"versionName":"0.5.0","apkUrl":"https://raw.githubusercontent.com/tomerpol/Windsurfer-updates/main/windsurfer.apk"}' > version.json
+          git config user.name github-actions
+          git config user.email github-actions@github.com
+          git add windsurfer.apk version.json
+          git rm .github/workflows/publish-current.yml
+          git commit -m "Publish Windsurfer 0.5.0 and remove temporary workflow"
+          git push
